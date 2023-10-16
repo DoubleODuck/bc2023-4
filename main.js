@@ -9,14 +9,17 @@ fs.readFile("./data.xml", "utf8", (err, xmldata) => {
     }
     const obj = parser.parse(xmldata);
     const necessaryData = obj.indicators.inflation.map(item => {
-        const container = {};
         if(item.ku === 13 && item.value >5){
-            container.value=item.value;
+            return item.value;
         }
-        return container;
     })
-    const filteredData = necessaryData.filter(item => Object.keys(item).length !== 0);
-    const xmlstring = builder.build(filteredData);
+    const filteredData = necessaryData.filter(item => item !== undefined);
+    const xmlObj = {
+        data: {
+            value: filteredData 
+        }
+    };
+    const xmlstring = builder.build(xmlObj);
     fs.writeFile("output.xml", xmlstring, (err) => {
         if (err) {
             console.log("File write failed",err);
